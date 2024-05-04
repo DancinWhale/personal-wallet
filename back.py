@@ -29,7 +29,7 @@ class Wallet:
         with open(self.file_path, 'a', encoding="UTF-8") as journal_file:
             journal_file.writelines(data)
 
-    def update_data(self, data):  # Сохранение данных в журнал
+    def update_data(self, data):  # Обновление данных в журнале
         with open(self.file_path, 'w', encoding="UTF-8") as journal_file:
             journal_file.writelines(data)
 
@@ -44,7 +44,7 @@ class Wallet:
             elif "Расход" in line:
                 spending += int(journal[index + 1].split(": ")[1])  # Считаем все расходы
             index += 1
-        return income - spending, income, spending
+        return income - spending, income, spending  # Возвращаем разницу - баланс, а также доход и расходы
 
     def note_add(self):  # Добавление записи в журнал
         print('\n-- Введите корректные данные для добавления новой записи:\n')
@@ -52,7 +52,8 @@ class Wallet:
         category = input("Введите категорию (Доход/Расход): ")
         amount = input("Введите сумму без пробелов: ")
         description = input("Введите описание: ")
-        if category in ("Доход", "Расход") and amount.isdigit():
+
+        if category in ("Доход", "Расход") and amount.isdigit():  # Проверка корректности данных
             new_note = ["\n\n",
                         "Дата: " + str(date) + "\n",
                         "Категория: " + category + "\n",
@@ -67,7 +68,7 @@ class Wallet:
     def note_edit(self, note_number):  # Редактирование записи в журнале
         all_notes = self.data_to_dictionaries()
 
-        if note_number > len(all_notes):
+        if note_number > len(all_notes):  # Проверяем есть ли номер записи в журнале
             return False
 
         da = input("Введите дату в формате YYYY-MM-DD: ")
@@ -83,16 +84,16 @@ class Wallet:
             all_notes[note_number + 1]['Сумма'] = am
             all_notes[note_number + 1]['Описание'] = des
 
-            data = []
+            data = []  # Обновление данных в файле
             for i in all_notes:
                 for k, v in i.items():
                     data.append(str(k) + ': ' + str(v) + '\n')
                 data.append('\n')
             self.update_data(data)
 
-            return True
+            return True  # Редактирование прошло успешно
         else:
-            return False
+            return False  # Редактирование прошло неуспешно
 
     def notes_out(self):  # Вывод записей по фильтрам
         print('\n-- Введите критерии, по которым будут фильтроваться записи')
@@ -105,8 +106,8 @@ class Wallet:
         if re.match(r'\d{4}-\d{2}-\d{2}', da) or da == '+' and cat in ("Доход", "Расход", "+") and am.isdigit() or am == "+":  # Проверка введенных данных на корректность
             print('\n-- Записи, подходящие по фильтрам --'
                   '\n-----------------------------------+')
-            all_notes = self.data_to_dictionaries()
-            for i in all_notes:
+            all_notes = self.data_to_dictionaries()  # Загружаем все существующие записи
+            for i in all_notes:  # И выводим нежные пользователю
                 if ((i['Дата'] == da or da == "+")
                         and (i['Категория'] == cat or cat == "+")
                         and (i['Сумма'] == am or am == "+")
@@ -114,7 +115,7 @@ class Wallet:
                     for k, v in i.items():
                         print(k, v)
                     print('-----------------------------------+')
-            return True
+            return True  # Данные выведены успешно
         else:
             print("Проверьте, пожалуйста, корректность данных и повторите ввод.")
-            return False
+            return False  # Данные выведены неуспешно
